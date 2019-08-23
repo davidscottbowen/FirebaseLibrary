@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Library</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #008CBA;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+        }
+
+        .button:hover {
+            background-color: #008CBA;
+        }
+
+        .button:active {
+            background-color: #008CBA;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
+        .pad {
+            padding-left: 200px;
+        }
+
+        .ellipsis {
+            max-width: 1500px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="row">
+        </br>
+        </br>
+        <div class="col-md-3 pad">
+            <form>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label for="bookTitleField">Book Title: </label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="bookTitleField">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label for="bookAuthorField">Book Author: &nbsp; </label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="bookAuthorField">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-5">
+                        <center>
+                            <a class="button" onclick="submit()">Submit</a>
+                        </center>
+                    </div>
+                </div>
+                </br>
+                </br>
+                <div class="form-group row">
+                    <table class="ellipsis" id="previousOrders" style="width:100%">
+                    </table>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+
+    <script>
+
+        
+
+        var config = {
+            apiKey: "AIzaSyBWEZqPcKvPMcc3mieexX8nqcM0ItZnAmg",
+            authDomain: "s3dsb-eee49.firebaseapp.com",
+            databaseURL: "https://s3dsb-eee49.firebaseio.com",
+            projectId: "s3dsb-eee49",
+            storageBucket: "",
+            messagingSenderId: "463883835461"
+        };
+
+        //initialize your firebase
+        firebase.initializeApp(config);
+        var database = firebase.database();
+        //create a variable to hold our orders list from firebase
+        var firebaseOrdersCollection = database.ref().child('librarybooks');
+
+        //create a 'listener' which waits for changes to the values inside the firebaseOrdersCollection 
+        firebaseOrdersCollection.on('value', function (orders) {
+            //create an empty string that will hold our new HTML
+            var bookArray = [];
+            var allOrdersHtml = "";
+            //this is saying foreach order do the following function...
+            orders.forEach(function (firebaseOrderReference) {
+                //this gets the actual data (JSON) for the order.
+                var order = firebaseOrderReference.val();
+                bookArray.push(order);
+            });
+            for (i = 0; i < bookArray.length; i++) {
+                var individialOrderHtml = `  <tr>
+                                                <td  height="30"><b>` + bookArray[i].bookTitle + `</b></td>
+                                                <td  height="30">`+ bookArray[i].bookAuthor + `</td>
+                                             </tr> `;
+
+                allOrdersHtml = allOrdersHtml + individialOrderHtml;
+
+            }
+
+            $('#previousOrders').html(allOrdersHtml)
+        });
+
+        function submit() {
+            var book = {
+                bookTitle: $('#bookTitleField').val(),
+                bookAuthor: $('#bookAuthorField').val()
+            };
+
+            firebaseOrdersCollection.child(book.bookTitle).set(book);
+            clearFields();
+        }
+
+        function clearFields() {
+            document.getElementById('bookTitleField').value = "";
+            document.getElementById('bookAuthorField').value = "";
+        };
+
+    </script>
+
+</body>
+
+</html>
