@@ -37,6 +37,12 @@
             transform: translateY(4px);
         }
 
+        .smaller {
+            padding: 5px 10px;
+            font-size: 10px;
+            box-shadow: 0 3px #999;
+        }
+
         .pad {
             padding-left: 200px;
         }
@@ -98,9 +104,6 @@
     <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
 
     <script>
-
-
-
         var config = {
             apiKey: "AIzaSyBWEZqPcKvPMcc3mieexX8nqcM0ItZnAmg",
             authDomain: "s3dsb-eee49.firebaseapp.com",
@@ -118,31 +121,6 @@
         var firebaseBooksCollection = database.ref().child('LibraryBooksOut');
 
         //create a 'listener' which waits for changes to the values inside the firebaseOrdersCollection 
-        firebaseBooksCollection.on('value', function (books) {
-            //create an empty string that will hold our new HTML
-            var outArray = [];
-            var allOutHtml = "";
-            //this is saying foreach order do the following function...
-            books.forEach(function (firebaseBookReference) {
-                //this gets the actual data (JSON) for the order.
-                var book = firebaseBookReference.val();
-                console.log(book);
-                outArray.push(book);
-            });
-            for (i = 0; i < outArray.length; i++) {
-                var individialBookHtml = `  <tr>
-                                                <td  height="30">` + outArray[i].Title + `</td>
-                                             </tr> `;
-
-                allOutHtml = allOutHtml + individialBookHtml;
-
-            }
-
-            $('#outOrders').html(allOutHtml)
-        });
-
-
-        //create a 'listener' which waits for changes to the values inside the firebaseOrdersCollection 
         firebaseOrdersCollection.on('value', function (orders) {
             //create an empty string that will hold our new HTML
             var bookArray = [];
@@ -151,12 +129,12 @@
             orders.forEach(function (firebaseOrderReference) {
                 //this gets the actual data (JSON) for the order.
                 var order = firebaseOrderReference.val();
-                console.log(order);
                 bookArray.push(order);
             });
             for (i = 0; i < bookArray.length; i++) {
                 var individialOrderHtml = `  <tr>
                                                 <td  height="30">` + bookArray[i].Title + `</td>
+                                                <td  height="30"><a class="button smaller" onclick="checkOut()">Check Out</a></td>
                                              </tr> `;
 
                 allOrdersHtml = allOrdersHtml + individialOrderHtml;
@@ -166,6 +144,43 @@
             $('#previousOrders').html(allOrdersHtml)
         });
 
+        //create a 'listener' which waits for changes to the values inside the firebaseOrdersCollection 
+        firebaseBooksCollection.on('value', function (books) {
+            //create an empty string that will hold our new HTML
+            var outArray = [];
+            var allOutHtml = "";
+            //this is saying foreach order do the following function...
+            books.forEach(function (firebaseBookReference) {
+                //this gets the actual data (JSON) for the order.
+                var book = firebaseBookReference.val();
+                outArray.push(book);
+            });
+            for (i = 0; i < outArray.length; i++) {
+                var individialBookHtml = `  <tr>
+                                                <td  height="30">` + outArray[i].Title + `</td>
+                                                <td  height="30"><a class="button smaller" onclick="checkIn()">Check In</a></td>
+                                             </tr> `;
+
+                allOutHtml = allOutHtml + individialBookHtml;
+
+            }
+
+            $('#outOrders').html(allOutHtml)
+        });
+
+        function clearFields() {
+            document.getElementById('bookTitleField').value = "";
+            // document.getElementById('bookAuthorField').value = "";
+        };
+
+        function checkIn() {
+            console.log("Check In")
+        };
+
+        function checkOut() {
+            console.log("Check Out")
+        };
+
         function submit() {
             var book = {
                 Title: $('#bookTitleField').val()
@@ -174,11 +189,6 @@
             firebaseOrdersCollection.child(book.Title).set(book);
             clearFields();
         }
-
-        function clearFields() {
-            document.getElementById('bookTitleField').value = "";
-            // document.getElementById('bookAuthorField').value = "";
-        };
 
     </script>
 
