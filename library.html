@@ -174,7 +174,11 @@
         };
 
         function checkIn(selected) {
-            console.log("Check In: " + selected);
+            var book = {
+                Title: selected
+            };
+            firebaseOrdersCollection.child(book.Title).set(book);
+            firebaseBooksCollection.child(selected).remove();
         };
 
         function checkOut(selected) {
@@ -182,6 +186,7 @@
                 Title: selected
             };
             firebaseBooksCollection.child(book.Title).set(book);
+            firebaseOrdersCollection.child(selected).remove();
         };
 
         function submit() {
