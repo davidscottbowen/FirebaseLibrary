@@ -64,31 +64,26 @@
                         <input type="text" id="bookTitleField">
                     </div>
                 </div>
-
-                <div class="form-group row">
-                    <div class="col-md-6">
-                        <label for="bookAuthorField">Book Author: &nbsp; </label>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" id="bookAuthorField">
-                    </div>
+                <div class="col-md-5">
+                    <center>
+                        <a class="button" onclick="submit()">Submit</a>
+                    </center>
                 </div>
-
-                <div class="form-group row">
-                    <div class="col-md-5">
-                        <center>
-                            <a class="button" onclick="submit()">Submit</a>
-                        </center>
-                    </div>
-                </div>
-                </br>
-                </br>
-                <div class="form-group row">
-                    <table class="ellipsis" id="previousOrders" style="width:100%">
-                    </table>
-                </div>
-
             </form>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-md-6 pad">
+            <p><b>Library Books In</b></p>
+            <table class="ellipsis" id="previousOrders" style="width:100%">
+            </table>
+        </div>
+        <div class="col-md-6 pad">
+            <p><b>Library Books Out</b></p>
+            <table class="ellipsis" id="outOrders" style="width:100%">
+            </table>
         </div>
     </div>
 
@@ -104,7 +99,7 @@
 
     <script>
 
-        
+
 
         var config = {
             apiKey: "AIzaSyBWEZqPcKvPMcc3mieexX8nqcM0ItZnAmg",
@@ -119,7 +114,33 @@
         firebase.initializeApp(config);
         var database = firebase.database();
         //create a variable to hold our orders list from firebase
-        var firebaseOrdersCollection = database.ref().child('librarybooks');
+        var firebaseOrdersCollection = database.ref().child('LibraryBooksIn');
+        var firebaseBooksCollection = database.ref().child('LibraryBooksOut');
+
+        //create a 'listener' which waits for changes to the values inside the firebaseOrdersCollection 
+        firebaseBooksCollection.on('value', function (books) {
+            //create an empty string that will hold our new HTML
+            var outArray = [];
+            var allOutHtml = "";
+            //this is saying foreach order do the following function...
+            books.forEach(function (firebaseBookReference) {
+                //this gets the actual data (JSON) for the order.
+                var book = firebaseBookReference.val();
+                console.log(book);
+                outArray.push(book);
+            });
+            for (i = 0; i < outArray.length; i++) {
+                var individialBookHtml = `  <tr>
+                                                <td  height="30">` + outArray[i].Title + `</td>
+                                             </tr> `;
+
+                allOutHtml = allOutHtml + individialBookHtml;
+
+            }
+
+            $('#outOrders').html(allOutHtml)
+        });
+
 
         //create a 'listener' which waits for changes to the values inside the firebaseOrdersCollection 
         firebaseOrdersCollection.on('value', function (orders) {
@@ -130,12 +151,12 @@
             orders.forEach(function (firebaseOrderReference) {
                 //this gets the actual data (JSON) for the order.
                 var order = firebaseOrderReference.val();
+                console.log(order);
                 bookArray.push(order);
             });
             for (i = 0; i < bookArray.length; i++) {
                 var individialOrderHtml = `  <tr>
-                                                <td  height="30"><b>` + bookArray[i].bookTitle + `</b></td>
-                                                <td  height="30">`+ bookArray[i].bookAuthor + `</td>
+                                                <td  height="30">` + bookArray[i].Title + `</td>
                                              </tr> `;
 
                 allOrdersHtml = allOrdersHtml + individialOrderHtml;
@@ -147,17 +168,16 @@
 
         function submit() {
             var book = {
-                bookTitle: $('#bookTitleField').val(),
-                bookAuthor: $('#bookAuthorField').val()
+                Title: $('#bookTitleField').val()
             };
 
-            firebaseOrdersCollection.child(book.bookTitle).set(book);
+            firebaseOrdersCollection.child(book.Title).set(book);
             clearFields();
         }
 
         function clearFields() {
             document.getElementById('bookTitleField').value = "";
-            document.getElementById('bookAuthorField').value = "";
+            // document.getElementById('bookAuthorField').value = "";
         };
 
     </script>
