@@ -134,7 +134,7 @@
             for (i = 0; i < bookArray.length; i++) {
                 var individialOrderHtml = `  <tr>
                                                 <td  height="30">` + bookArray[i].Title + `</td>
-                                                <td  height="30"><a class="button smaller" onclick="checkOut()">Check Out</a></td>
+                                                <td  height="30"><a class="button smaller" onclick="checkOut('` + bookArray[i].Title + `')">Check Out</a></td>
                                              </tr> `;
 
                 allOrdersHtml = allOrdersHtml + individialOrderHtml;
@@ -158,7 +158,7 @@
             for (i = 0; i < outArray.length; i++) {
                 var individialBookHtml = `  <tr>
                                                 <td  height="30">` + outArray[i].Title + `</td>
-                                                <td  height="30"><a class="button smaller" onclick="checkIn()">Check In</a></td>
+                                                <td  height="30"><a class="button smaller" onclick="checkIn('` + outArray[i].Title + `')">Check In</a></td>
                                              </tr> `;
 
                 allOutHtml = allOutHtml + individialBookHtml;
@@ -173,12 +173,12 @@
             // document.getElementById('bookAuthorField').value = "";
         };
 
-        function checkIn() {
-            console.log("Check In")
+        function checkIn(book) {
+            console.log("Check In: " + book);
         };
 
-        function checkOut() {
-            console.log("Check Out")
+        function checkOut(book) {
+            console.log("Check Out: " + book);
         };
 
         function submit() {
