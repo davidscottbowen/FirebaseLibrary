@@ -173,12 +173,15 @@
             // document.getElementById('bookAuthorField').value = "";
         };
 
-        function checkIn(book) {
-            console.log("Check In: " + book);
+        function checkIn(selected) {
+            console.log("Check In: " + selected);
         };
 
-        function checkOut(book) {
-            console.log("Check Out: " + book);
+        function checkOut(selected) {
+            var book = {
+                Title: selected
+            };
+            firebaseBooksCollection.child(book.Title).set(book);
         };
 
         function submit() {
